@@ -1,0 +1,18 @@
+---
+- name: Change ssh keys
+  hosts: app
+  user: vagrant
+  vars:
+     user_to_change: vagrant
+
+  tasks:
+    - name: Add keys
+      authorized_key: state=present user={{user_to_change}}
+                      key="{{ lookup('file', item) }}"
+      with_fileglob: keys_to_add/*.pub
+
+    - name: Drop keys
+      authorized_key: state=absent user={{user_to_change}}
+                      key="{{ lookup('file', item) }}"
+      with_fileglob: keys_to_drop/*.pub
+
